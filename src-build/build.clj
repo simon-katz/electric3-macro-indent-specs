@@ -15,25 +15,25 @@ application classpath to be available"
          :or {optimize true, debug false, verbose false}
          :as config}
         (-> argmap
-          (assoc :hyperfiddle.electric-ring-adapter3/electric-user-version electric-user-version))]
+            (assoc :hyperfiddle.electric-ring-adapter3/electric-user-version electric-user-version))]
     (log/info 'build-client (pr-str config #_argmap))
     (b/delete {:path "resources/public/electric_starter_app/js"})
     (b/delete {:path "resources/electric-manifest.edn"})
 
-    ; bake electric-user-version into artifact, cljs and clj
+; bake electric-user-version into artifact, cljs and clj
     (b/write-file {:path "resources/electric-manifest.edn" :content config})
 
-    ; "java.lang.NoClassDefFoundError: com/google/common/collect/Streams" is fixed by
-    ; adding com.google.guava/guava {:mvn/version "31.1-jre"} to deps,
-    ; see https://hf-inc.slack.com/archives/C04TBSDFAM6/p1692636958361199
+; "java.lang.NoClassDefFoundError: com/google/common/collect/Streams" is fixed by
+; adding com.google.guava/guava {:mvn/version "31.1-jre"} to deps,
+; see https://hf-inc.slack.com/archives/C04TBSDFAM6/p1692636958361199
     (shadow-server/start!)
     (as->
         (shadow-api/release :prod
-          {:debug   debug,
-           :verbose verbose,
-           :config-merge
-           [{:compiler-options {:optimizations (if optimize :advanced :simple)}
-             :closure-defines  {'hyperfiddle.electric-client3/ELECTRIC_USER_VERSION electric-user-version}}]})
+                            {:debug   debug,
+                             :verbose verbose,
+                             :config-merge
+                             [{:compiler-options {:optimizations (if optimize :advanced :simple)}
+                               :closure-defines  {'hyperfiddle.electric-client3/ELECTRIC_USER_VERSION electric-user-version}}]})
         shadow-status (assert (= shadow-status :done) "shadow-api/release error")) ; fail build on error
     (shadow-server/stop!)
     (log/info "client built")))
@@ -44,7 +44,7 @@ application classpath to be available"
   [{:keys [optimize debug verbose ::jar-name, ::skip-client]
     :or {optimize true, debug false, verbose false, skip-client false}
     :as args}]
-  ; careful, shell quote escaping combines poorly with clj -X arg parsing, strings read as symbols
+; careful, shell quote escaping combines poorly with clj -X arg parsing, strings read as symbols
   (log/info 'uberjar (pr-str args))
   (b/delete {:path "target"})
 
@@ -53,7 +53,7 @@ application classpath to be available"
 
   (b/copy-dir {:target-dir class-dir :src-dirs ["src" "src-prod" "resources"]})
   (let [jar-name (or (some-> jar-name str) ; override for Dockerfile builds to avoid needing to reconstruct the name
-                   (format "electricfiddle-%s.jar" electric-user-version))
+                     (format "electricfiddle-%s.jar" electric-user-version))
         aliases [:prod]]
     (b/uber {:class-dir class-dir
              :uber-file (str "target/" jar-name)

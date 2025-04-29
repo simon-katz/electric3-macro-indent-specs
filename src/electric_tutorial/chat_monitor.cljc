@@ -7,7 +7,7 @@
     (if (some? username)
       (dom/text "Authenticated as: " username)
       (dom/a (dom/props {:href "/auth"})
-        (dom/text "Set login cookie (blank password)")))))
+             (dom/text "Set login cookie (blank password)")))))
 
 #?(:clj (defonce !present (atom {}))) ; session-id -> user
 
@@ -32,10 +32,10 @@
 
 (e/defn Channel [msgs]
   (dom/ul (dom/props {:class "channel"})
-    (e/for [{:keys [username msg]} msgs] ; render list bottom up in CSS
-      (dom/li (dom/props {:style {:visibility (if (some? msg) "visible" "hidden")
-                                  :grid-template-columns "1fr 1fr"}})
-        (dom/span (dom/strong (dom/text username)) (dom/text " " msg))))))
+          (e/for [{:keys [username msg]} msgs] ; render list bottom up in CSS
+            (dom/li (dom/props {:style {:visibility (if (some? msg) "visible" "hidden")
+                                        :grid-template-columns "1fr 1fr"}})
+                    (dom/span (dom/strong (dom/text username)) (dom/text " " msg))))))
 
 (e/defn InputSubmitCreate?!
   "transactional chat input with busy state. Supports rapid submit, sending
@@ -46,33 +46,33 @@ lost. Fixing this requires form semantics, see forms tutorial."
       :or {maxlength 100 type "text" parse identity}}]
   (e/client
     (dom/input (dom/props (-> props (dissoc :parse) (assoc :maxLength maxlength :type type)))
-      (letfn [(read! [node] (not-empty (subs (.-value node) 0 maxlength)))
-              (read-clear! [node] (when-some [v (read! node)] (set! (.-value node) "") v))
-              (submit! [e] (let [k (.-key e)]
-                             (cond
-                               (= "Enter" k) (parse (read-clear! (.-target e)))
-                               (= "Escape" k) (do (set! (.-value dom/node) "") nil)
-                               () nil)))]
-        (let [edits (dom/On-all "keydown" submit!)] ; concurrent pending submits
-          (dom/props {:aria-busy (pos? (e/Count edits))})
-          edits)))))
+               (letfn [(read! [node] (not-empty (subs (.-value node) 0 maxlength)))
+                       (read-clear! [node] (when-some [v (read! node)] (set! (.-value node) "") v))
+                       (submit! [e] (let [k (.-key e)]
+                                      (cond
+                                        (= "Enter" k) (parse (read-clear! (.-target e)))
+                                        (= "Escape" k) (do (set! (.-value dom/node) "") nil)
+                                        () nil)))]
+                 (let [edits (dom/On-all "keydown" submit!)] ; concurrent pending submits
+                   (dom/props {:aria-busy (pos? (e/Count edits))})
+                   edits)))))
 
 (e/defn SendMessageInput [username]
   (InputSubmitCreate?! :disabled (nil? username) :placeholder (if username "Send message" "Login to chat")))
 
 (e/defn ChatApp [username present]
   (e/amb
-    (Present present)
-    (dom/hr (e/amb)) ; silence nil
-    (Channel (Query-chats))
-    (SendMessageInput username)
-    (Login username)))
+   (Present present)
+   (dom/hr (e/amb)) ; silence nil
+   (Channel (Query-chats))
+   (SendMessageInput username)
+   (Login username)))
 
 (e/defn Create-message [username msg]
   (e/server ; secure, validate command here
     (let [record (->msg-record username msg)] ; secure
       (e/Offload #(try (send-message! record) ::ok
-                    (catch Exception e (doto ::rejected (prn e))))))))
+                       (catch Exception e (doto ::rejected (prn e))))))))
 
 (declare css)
 (e/defn ChatMonitor []
