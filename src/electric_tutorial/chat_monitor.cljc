@@ -62,6 +62,9 @@ lost. Fixing this requires form semantics, see forms tutorial."
 
 (e/defn ChatApp [username present]
   (e/amb
+   (e/call (e/fn [x]
+             (dom/div (dom/text "Hello " x)))
+     "Simon")
    (Present present)
    (dom/hr (e/amb)) ; silence nil
    (Channel (Query-chats))
