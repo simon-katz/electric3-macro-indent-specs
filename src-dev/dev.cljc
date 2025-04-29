@@ -3,7 +3,6 @@
    clojure.edn
    electric-starter-app.main
    [hyperfiddle.electric3 :as e]
-   ;; #?(:cljs hyperfiddle.electric-client3)
    #?(:clj [shadow.cljs.devtools.api :as shadow])
    #?(:clj [shadow.cljs.devtools.server :as shadow-server])
    #?(:clj [clojure.tools.logging :as log])))
