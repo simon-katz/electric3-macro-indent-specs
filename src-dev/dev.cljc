@@ -2,7 +2,6 @@
   (:require
    clojure.edn
    electric-starter-app.main
-   [hyperfiddle.electric3 :as e]
    #?(:clj [shadow.cljs.devtools.api :as shadow])
    #?(:clj [shadow.cljs.devtools.server :as shadow-server])
    #?(:clj [clojure.tools.logging :as log])))
@@ -27,16 +26,3 @@
 
        (comment (shadow-server/stop!))
        )))
-
-#?(:cljs ; client entrypoint
-   (do
-     (defonce reactor nil)
-
-     (defn ^:dev/after-load ^:export start! []
-       (set! reactor ((e/boot-client {} electric-starter-app.main/Main (e/server (e/amb))) ; symmetric with e/boot-server: same arity - no-value hole in place of server-only ring-request
-                      #(js/console.log "Reactor success:" %)
-                      #(js/console.error "Reactor failure:" %))))
-
-     (defn ^:dev/before-load stop! []
-       (when reactor (reactor)) ; stop the reactor
-       (set! reactor nil))))
