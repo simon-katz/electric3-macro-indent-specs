@@ -4,7 +4,6 @@
    electric-starter-app.main
    [hyperfiddle.electric3 :as e]
    ;; #?(:cljs hyperfiddle.electric-client3)
-   #?(:clj [electric-starter-app.server-jetty :as jetty])
    #?(:clj [shadow.cljs.devtools.api :as shadow])
    #?(:clj [shadow.cljs.devtools.server :as shadow-server])
    #?(:clj [clojure.tools.logging :as log])))
@@ -28,15 +27,6 @@
        (shadow/watch :dev)
 
        (comment (shadow-server/stop!))
-
-       (def server (jetty/start-server!
-                    (fn [ring-request]
-                      (e/boot-server {} electric-starter-app.main/Main (e/server ring-request))) ; inject server-only ring-request - symmetric with e/boot-client
-                    config))
-       (comment
-         (.stop server) ; jetty
-         (server)       ; httpkit
-         )
        )))
 
 #?(:cljs ; client entrypoint
