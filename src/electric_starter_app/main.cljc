@@ -1,7 +1,8 @@
 (ns electric-starter-app.main
   (:require [hyperfiddle.electric3 :as e]
             [hyperfiddle.electric-dom3 :as dom]
-            [electric-tutorial.chat-monitor :refer [ChatMonitor]]))
+            [electric-tutorial.chat-monitor :refer [ChatMonitor]]
+            [acme.frontend.app]))
 
 (e/defn Main [ring-request]
   (e/client
